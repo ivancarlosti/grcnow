@@ -127,4 +127,3 @@ plans               implementation plans and phase checklists
 ```
 
 More detail: [docs/setup.md](docs/setup.md) · [docs/api.md](docs/api.md) · [docs/i18n.md](docs/i18n.md)
-
