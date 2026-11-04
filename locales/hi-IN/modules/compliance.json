@@ -1,0 +1,10 @@
+{
+  "compliance": {
+    "coverage": "कवरेज",
+    "mapped": "मैप किए गए आवश्यकताएँ",
+    "unmapped": "अमैप किए गए आवश्यकताएँ",
+    "requirements": "आवश्यकताएँ",
+    "mapping": "आवश्यकता मैप करें",
+    "importPackage": "पैकेज आयात करें"
+  }
+}

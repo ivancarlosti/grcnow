@@ -1,0 +1,6 @@
+{
+  "confirmDelete": {
+    "title": "Excluir registro",
+    "message": "Esta ação não pode ser desfeita. Excluir este registro?"
+  }
+}

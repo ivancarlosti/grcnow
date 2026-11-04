@@ -1,0 +1,8 @@
+{
+  "policy": {
+    "acknowledgements": "确认记录",
+    "pendingAcks": "待确认",
+    "requiresAck": "需要确认",
+    "newVersion": "发布新版本"
+  }
+}

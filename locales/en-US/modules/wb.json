@@ -1,0 +1,12 @@
+{
+  "wb": {
+    "title": "Ethics & whistleblowing channel",
+    "subtitle": "Report a concern confidentially. You may stay anonymous.",
+    "category": "Category",
+    "subject": "Subject",
+    "message": "What happened?",
+    "submit": "Submit report",
+    "thanks": "Thank you. Your report was received.",
+    "anonymous": "Send anonymously"
+  }
+}

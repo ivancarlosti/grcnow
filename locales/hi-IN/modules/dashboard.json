@@ -1,0 +1,23 @@
+{
+  "dashboard": {
+    "title": "अनुशासन डैशबोर्ड",
+    "subtitle": "आपके जोखिम, नियंत्रण और अनुपालन की लाइव झलक।",
+    "totalRisks": "कुल जोखिम",
+    "highRisks": "उच्च और गंभीर",
+    "controlsDue": "परीक्षण हेतु नियंत्रण",
+    "policiesDue": "समीक्षा हेतु नीतियाँ",
+    "openIncidents": "खुली घटनाएँ",
+    "complianceScore": "अनुपालन स्कोर",
+    "overdueTasks": "अतिदेय कार्य",
+    "riskMatrix": "जोखिम मैट्रिक्स",
+    "complianceByFramework": "फ्रेमवर्क अनुसार अनुपालन",
+    "recentActivity": "हाल की गतिविधि",
+    "myTasks": "मेरे कार्य",
+    "upcomingReviews": "आगामी समीक्षाएँ",
+    "quickActions": "त्वरित क्रियाएँ",
+    "risksByCategory": "श्रेणी अनुसार जोखिम",
+    "controlsByStatus": "स्थिति अनुसार नियंत्रण",
+    "noRisks": "अभी कोई जोखिम दर्ज नहीं",
+    "addFirstRisk": "अपना पहला जोखिम दर्ज करें"
+  }
+}

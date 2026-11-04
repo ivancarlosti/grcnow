@@ -1,0 +1,23 @@
+{
+  "dashboard": {
+    "title": "لوحة الحوكمة",
+    "subtitle": "عرض مباشر لوضع المخاطر والضوابط والامتثال.",
+    "totalRisks": "إجمالي المخاطر",
+    "highRisks": "مرتفعة وحرجة",
+    "controlsDue": "ضوابط للاختبار",
+    "policiesDue": "سياسات للمراجعة",
+    "openIncidents": "حوادث مفتوحة",
+    "complianceScore": "درجة الامتثال",
+    "overdueTasks": "مهام متأخرة",
+    "riskMatrix": "مصفوفة المخاطر",
+    "complianceByFramework": "الامتثال حسب الإطار",
+    "recentActivity": "النشاط الأخير",
+    "myTasks": "مهامي",
+    "upcomingReviews": "المراجعات القادمة",
+    "quickActions": "إجراءات سريعة",
+    "risksByCategory": "المخاطر حسب الفئة",
+    "controlsByStatus": "الضوابط حسب الحالة",
+    "noRisks": "لم تُسجّل مخاطر بعد",
+    "addFirstRisk": "سجّل أول خطر"
+  }
+}

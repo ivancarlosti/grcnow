@@ -1,0 +1,40 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# builds
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# runtime data
+storage/
+logs/
+*.log
+coverage/
+.playwright/
+
+# env files (never commit real secrets)
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env.*.local
+
+# Keep examples tracked
+!docker/.env.example
+
+# editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# prisma
+apps/api/prisma/*.db
+apps/api/prisma/*.db-journal
+
+# NOTE: /docs, /plans, /docker and /.github must always remain tracked.

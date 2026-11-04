@@ -1,0 +1,14 @@
+{
+  "risk": {
+    "appetite": "Apetito de riesgo",
+    "appetiteExceeded": "Por encima del apetito",
+    "treatment": {
+      "mitigate": "Mitigar",
+      "accept": "Aceptar",
+      "avoid": "Evitar",
+      "transfer": "Transferir"
+    },
+    "residual": "Riesgo residual",
+    "inherent": "Riesgo inherente"
+  }
+}

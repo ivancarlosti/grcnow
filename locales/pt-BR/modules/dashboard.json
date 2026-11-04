@@ -1,0 +1,23 @@
+{
+  "dashboard": {
+    "title": "Painel de governança",
+    "subtitle": "Uma visão em tempo real do seu risco, controle e conformidade.",
+    "totalRisks": "Total de riscos",
+    "highRisks": "Altos e críticos",
+    "controlsDue": "Controles a testar",
+    "policiesDue": "Políticas a revisar",
+    "openIncidents": "Incidentes abertos",
+    "complianceScore": "Índice de conformidade",
+    "overdueTasks": "Tarefas atrasadas",
+    "riskMatrix": "Matriz de risco",
+    "complianceByFramework": "Conformidade por framework",
+    "recentActivity": "Atividade recente",
+    "myTasks": "Minhas tarefas",
+    "upcomingReviews": "Próximas revisões",
+    "quickActions": "Ações rápidas",
+    "risksByCategory": "Riscos por categoria",
+    "controlsByStatus": "Controles por status",
+    "noRisks": "Nenhum risco registrado ainda",
+    "addFirstRisk": "Registre seu primeiro risco"
+  }
+}

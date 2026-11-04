@@ -1,0 +1,9 @@
+{
+  "ai": {
+    "title": "Asistente GRC",
+    "placeholder": "Pregunte sobre riesgos, controles o cumplimiento…",
+    "send": "Enviar",
+    "disclaimer": "Las respuestas de la IA son sugerencias. Valide antes de actuar.",
+    "notConfigured": "El asistente de IA no está configurado. Agregue una clave OpenAI en la configuración."
+  }
+}

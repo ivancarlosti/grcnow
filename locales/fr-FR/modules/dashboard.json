@@ -1,0 +1,23 @@
+{
+  "dashboard": {
+    "title": "Tableau de bord de gouvernance",
+    "subtitle": "Une vue en direct de vos risques, contrôles et conformité.",
+    "totalRisks": "Total des risques",
+    "highRisks": "Élevés et critiques",
+    "controlsDue": "Contrôles à tester",
+    "policiesDue": "Politiques à réviser",
+    "openIncidents": "Incidents ouverts",
+    "complianceScore": "Score de conformité",
+    "overdueTasks": "Tâches en retard",
+    "riskMatrix": "Matrice des risques",
+    "complianceByFramework": "Conformité par référentiel",
+    "recentActivity": "Activité récente",
+    "myTasks": "Mes tâches",
+    "upcomingReviews": "Prochaines revues",
+    "quickActions": "Actions rapides",
+    "risksByCategory": "Risques par catégorie",
+    "controlsByStatus": "Contrôles par statut",
+    "noRisks": "Aucun risque enregistré",
+    "addFirstRisk": "Enregistrez votre premier risque"
+  }
+}

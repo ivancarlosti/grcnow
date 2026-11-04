@@ -1,0 +1,7 @@
+{
+  "search": {
+    "globalPlaceholder": "Rechercher risques, contrôles, politiques…",
+    "results": "Résultats de recherche",
+    "noResults": "Aucun résultat pour « {term} »"
+  }
+}

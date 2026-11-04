@@ -1,0 +1,8 @@
+{
+  "policy": {
+    "acknowledgements": "स्वीकृतियाँ",
+    "pendingAcks": "लंबित स्वीकृतियाँ",
+    "requiresAck": "स्वीकृति आवश्यक",
+    "newVersion": "नया संस्करण प्रकाशित करें"
+  }
+}

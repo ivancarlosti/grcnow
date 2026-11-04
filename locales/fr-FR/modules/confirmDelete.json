@@ -1,0 +1,6 @@
+{
+  "confirmDelete": {
+    "title": "Supprimer l’enregistrement",
+    "message": "Cette action est irréversible. Supprimer cet enregistrement ?"
+  }
+}

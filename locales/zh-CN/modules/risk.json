@@ -1,0 +1,14 @@
+{
+  "risk": {
+    "appetite": "风险偏好",
+    "appetiteExceeded": "超出风险偏好",
+    "treatment": {
+      "mitigate": "缓解",
+      "accept": "接受",
+      "avoid": "规避",
+      "transfer": "转移"
+    },
+    "residual": "剩余风险",
+    "inherent": "固有风险"
+  }
+}

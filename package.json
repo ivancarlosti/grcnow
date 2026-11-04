@@ -1,0 +1,27 @@
+{
+  "name": "grcnow",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Multi-tenant GRC platform (Eramba-equivalent) — NestJS + Next.js + PostgreSQL",
+  "packageManager": "pnpm@10.34.9",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm --filter @grc/api build && pnpm --filter @grc/web build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "test": "pnpm --filter @grc/api test",
+    "locales": "node tools/generate-locales.mjs",
+    "db:generate": "pnpm --filter @grc/api db:generate",
+    "db:migrate": "pnpm --filter @grc/api db:migrate",
+    "db:push": "pnpm --filter @grc/api db:push",
+    "db:seed": "pnpm --filter @grc/api db:seed",
+    "e2e": "node tools/e2e-smoke.mjs",
+    "screenshots": "node tools/screenshots.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.64.1"
+  }
+}

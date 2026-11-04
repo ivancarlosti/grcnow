@@ -1,0 +1,14 @@
+{
+  "risk": {
+    "appetite": "Risk appetite",
+    "appetiteExceeded": "Above risk appetite",
+    "treatment": {
+      "mitigate": "Mitigate",
+      "accept": "Accept",
+      "avoid": "Avoid",
+      "transfer": "Transfer"
+    },
+    "residual": "Residual risk",
+    "inherent": "Inherent risk"
+  }
+}

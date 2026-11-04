@@ -1,0 +1,9 @@
+{
+  "notification": {
+    "riskCreated": "已登记新风险：{title}",
+    "incidentCreated": "已报告新事件：{title}",
+    "findingCreated": "新的审计发现：{title}",
+    "controlTestFailed": "控制测试失败：{title}",
+    "policyPublished": "政策已发布：{title}"
+  }
+}

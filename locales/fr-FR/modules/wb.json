@@ -1,0 +1,12 @@
+{
+  "wb": {
+    "title": "Canal d’éthique et d’alerte",
+    "subtitle": "Signalez une préoccupation de manière confidentielle. Vous pouvez rester anonyme.",
+    "category": "Catégorie",
+    "subject": "Objet",
+    "message": "Que s’est-il passé ?",
+    "submit": "Envoyer le signalement",
+    "thanks": "Merci. Votre signalement a été reçu.",
+    "anonymous": "Envoyer anonymement"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "compliance": {
+    "coverage": "覆盖率",
+    "mapped": "已映射要求",
+    "unmapped": "未映射要求",
+    "requirements": "要求",
+    "mapping": "映射要求",
+    "importPackage": "导入合规包"
+  }
+}

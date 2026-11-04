@@ -1,0 +1,23 @@
+{
+  "dashboard": {
+    "title": "Governance dashboard",
+    "subtitle": "A live view of your risk, control and compliance posture.",
+    "totalRisks": "Total risks",
+    "highRisks": "High & critical",
+    "controlsDue": "Controls to test",
+    "policiesDue": "Policies to review",
+    "openIncidents": "Open incidents",
+    "complianceScore": "Compliance score",
+    "overdueTasks": "Overdue tasks",
+    "riskMatrix": "Risk matrix",
+    "complianceByFramework": "Compliance by framework",
+    "recentActivity": "Recent activity",
+    "myTasks": "My tasks",
+    "upcomingReviews": "Upcoming reviews",
+    "quickActions": "Quick actions",
+    "risksByCategory": "Risks by category",
+    "controlsByStatus": "Controls by status",
+    "noRisks": "No risks registered yet",
+    "addFirstRisk": "Register your first risk"
+  }
+}

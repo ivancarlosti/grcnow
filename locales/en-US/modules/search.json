@@ -1,0 +1,7 @@
+{
+  "search": {
+    "globalPlaceholder": "Search risks, controls, policies…",
+    "results": "Search results",
+    "noResults": "Nothing found for “{term}”"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "policy": {
+    "acknowledgements": "Accusés de réception",
+    "pendingAcks": "Accusés en attente",
+    "requiresAck": "Nécessite un accusé",
+    "newVersion": "Publier une nouvelle version"
+  }
+}

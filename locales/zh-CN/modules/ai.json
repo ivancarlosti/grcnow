@@ -1,0 +1,9 @@
+{
+  "ai": {
+    "title": "GRC 助手",
+    "placeholder": "询问风险、控制或合规问题…",
+    "send": "发送",
+    "disclaimer": "AI 回答仅供参考，行动前请核实。",
+    "notConfigured": "AI 助手尚未配置，请在平台设置中添加 OpenAI 密钥。"
+  }
+}

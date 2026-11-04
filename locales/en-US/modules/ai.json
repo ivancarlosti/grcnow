@@ -1,0 +1,9 @@
+{
+  "ai": {
+    "title": "GRC Assistant",
+    "placeholder": "Ask about risks, controls or compliance…",
+    "send": "Send",
+    "disclaimer": "AI answers are suggestions. Validate before acting.",
+    "notConfigured": "The AI assistant is not configured. Add an OpenAI key in Platform settings."
+  }
+}

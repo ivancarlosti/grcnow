@@ -1,0 +1,12 @@
+{
+  "wb": {
+    "title": "道德与举报渠道",
+    "subtitle": "保密举报问题，您可以选择匿名。",
+    "category": "类别",
+    "subject": "主题",
+    "message": "发生了什么？",
+    "submit": "提交报告",
+    "thanks": "谢谢，您的报告已收到。",
+    "anonymous": "匿名发送"
+  }
+}

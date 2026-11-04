@@ -1,0 +1,14 @@
+{
+  "risk": {
+    "appetite": "जोखिम भूख",
+    "appetiteExceeded": "जोखिम भूख से अधिक",
+    "treatment": {
+      "mitigate": "कम करें",
+      "accept": "स्वीकार करें",
+      "avoid": "बचें",
+      "transfer": "स्थानांतरित करें"
+    },
+    "residual": "अवशिष्ट जोखिम",
+    "inherent": "अंतर्निहित जोखिम"
+  }
+}

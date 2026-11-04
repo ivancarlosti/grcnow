@@ -1,0 +1,16 @@
+{
+  "detail": {
+    "tabs": {
+      "overview": "अवलोकन",
+      "history": "इतिहास",
+      "comments": "टिप्पणियाँ",
+      "attachments": "संलग्नक"
+    },
+    "addComment": "टिप्पणी जोड़ें",
+    "commentPlaceholder": "टिप्पणी लिखें…",
+    "noComments": "अभी कोई टिप्पणी नहीं",
+    "noHistory": "कोई परिवर्तन दर्ज नहीं",
+    "created": "{user} द्वारा {date} को बनाया गया",
+    "updated": "अंतिम अपडेट {user} द्वारा {date} को"
+  }
+}

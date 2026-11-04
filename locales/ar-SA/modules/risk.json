@@ -1,0 +1,14 @@
+{
+  "risk": {
+    "appetite": "شهية المخاطر",
+    "appetiteExceeded": "يتجاوز شهية المخاطر",
+    "treatment": {
+      "mitigate": "تخفيف",
+      "accept": "قبول",
+      "avoid": "تجنب",
+      "transfer": "نقل"
+    },
+    "residual": "المخاطر المتبقية",
+    "inherent": "المخاطر الكامنة"
+  }
+}

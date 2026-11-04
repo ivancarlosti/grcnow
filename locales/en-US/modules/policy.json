@@ -1,0 +1,8 @@
+{
+  "policy": {
+    "acknowledgements": "Acknowledgements",
+    "pendingAcks": "Pending acknowledgements",
+    "requiresAck": "Requires acknowledgement",
+    "newVersion": "Publish new version"
+  }
+}

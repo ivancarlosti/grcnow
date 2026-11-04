@@ -1,0 +1,10 @@
+{
+  "compliance": {
+    "coverage": "Cobertura",
+    "mapped": "Requisitos asignados",
+    "unmapped": "Requisitos sin asignar",
+    "requirements": "Requisitos",
+    "mapping": "Asignar requisito",
+    "importPackage": "Importar paquete"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "policy": {
+    "acknowledgements": "الإقرارات",
+    "pendingAcks": "إقرارات معلقة",
+    "requiresAck": "يتطلب الإقرار",
+    "newVersion": "نشر إصدار جديد"
+  }
+}

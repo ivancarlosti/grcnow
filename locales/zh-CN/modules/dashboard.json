@@ -1,0 +1,23 @@
+{
+  "dashboard": {
+    "title": "治理仪表板",
+    "subtitle": "实时查看您的风险、控制与合规状况。",
+    "totalRisks": "风险总数",
+    "highRisks": "高与严重",
+    "controlsDue": "待测试控制",
+    "policiesDue": "待复核政策",
+    "openIncidents": "未关闭事件",
+    "complianceScore": "合规得分",
+    "overdueTasks": "逾期任务",
+    "riskMatrix": "风险矩阵",
+    "complianceByFramework": "各框架合规情况",
+    "recentActivity": "最近活动",
+    "myTasks": "我的任务",
+    "upcomingReviews": "即将到来的复核",
+    "quickActions": "快捷操作",
+    "risksByCategory": "按类别划分的风险",
+    "controlsByStatus": "按状态划分的控制",
+    "noRisks": "尚未登记风险",
+    "addFirstRisk": "登记第一个风险"
+  }
+}

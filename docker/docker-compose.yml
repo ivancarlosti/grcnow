@@ -1,0 +1,101 @@
+name: grcnow
+
+services:
+  grc-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-grc}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-grc}
+      POSTGRES_DB: ${POSTGRES_DB:-grc}
+    volumes:
+      - grc-db-data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-grc} -d ${POSTGRES_DB:-grc}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  grc-redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - grc-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  grc-api:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL:-postgresql://grc:grc@grc-db:5432/grc?schema=public}
+      REDIS_URL: ${REDIS_URL:-redis://grc-redis:6379}
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      API_PORT: 3001
+      STORAGE_LOCAL_ROOT: /storage/app
+      LOCALES_DIR: /app/locales
+    depends_on:
+      grc-db:
+        condition: service_healthy
+      grc-redis:
+        condition: service_started
+    volumes:
+      - grc-storage:/storage
+    ports:
+      - "${API_PORT:-3001}:3001"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 40s
+
+  grc-web:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      API_INTERNAL_URL: http://grc-api:3001
+      NEXT_PUBLIC_APP_URL: ${APP_URL:-http://localhost:3000}
+    depends_on:
+      grc-api:
+        condition: service_started
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+
+  # Optional S3-compatible object storage: docker compose --profile s3 up
+  grc-minio:
+    image: minio/minio:latest
+    profiles: ["s3"]
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY_ID:-grcminio}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_ACCESS_KEY:-grcminio123}
+    volumes:
+      - grc-minio-data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+volumes:
+  grc-db-data:
+  grc-redis-data:
+  grc-storage:
+  grc-minio-data:

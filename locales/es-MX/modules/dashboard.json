@@ -1,0 +1,23 @@
+{
+  "dashboard": {
+    "title": "Panel de gobierno",
+    "subtitle": "Una visión en vivo de su riesgo, control y cumplimiento.",
+    "totalRisks": "Riesgos totales",
+    "highRisks": "Altos y críticos",
+    "controlsDue": "Controles por probar",
+    "policiesDue": "Políticas por revisar",
+    "openIncidents": "Incidentes abiertos",
+    "complianceScore": "Puntaje de cumplimiento",
+    "overdueTasks": "Tareas vencidas",
+    "riskMatrix": "Matriz de riesgo",
+    "complianceByFramework": "Cumplimiento por marco",
+    "recentActivity": "Actividad reciente",
+    "myTasks": "Mis tareas",
+    "upcomingReviews": "Próximas revisiones",
+    "quickActions": "Acciones rápidas",
+    "risksByCategory": "Riesgos por categoría",
+    "controlsByStatus": "Controles por estado",
+    "noRisks": "Aún no hay riesgos registrados",
+    "addFirstRisk": "Registre su primer riesgo"
+  }
+}

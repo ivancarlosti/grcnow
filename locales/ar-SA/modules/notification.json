@@ -1,0 +1,9 @@
+{
+  "notification": {
+    "riskCreated": "تم تسجيل خطر جديد: {title}",
+    "incidentCreated": "تم الإبلاغ عن حادث جديد: {title}",
+    "findingCreated": "نتيجة تدقيق جديدة: {title}",
+    "controlTestFailed": "فشل اختبار الضابط: {title}",
+    "policyPublished": "تم نشر السياسة: {title}"
+  }
+}

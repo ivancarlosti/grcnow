@@ -1,0 +1,17 @@
+{
+  "locales": [
+    "en-US",
+    "pt-BR",
+    "es-MX",
+    "fr-FR",
+    "zh-CN",
+    "hi-IN",
+    "ar-SA"
+  ],
+  "fallback": "en-US",
+  "rtl": [
+    "ar-SA"
+  ],
+  "keyCount": 418,
+  "generatedAt": "2026-11-04T03:09:22.247Z"
+}

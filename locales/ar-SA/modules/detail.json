@@ -1,0 +1,16 @@
+{
+  "detail": {
+    "tabs": {
+      "overview": "نظرة عامة",
+      "history": "السجل",
+      "comments": "التعليقات",
+      "attachments": "المرفقات"
+    },
+    "addComment": "إضافة تعليق",
+    "commentPlaceholder": "اكتب تعليقًا…",
+    "noComments": "لا توجد تعليقات بعد",
+    "noHistory": "لا توجد تغييرات مسجلة",
+    "created": "أنشأه {user} في {date}",
+    "updated": "آخر تحديث بواسطة {user} في {date}"
+  }
+}

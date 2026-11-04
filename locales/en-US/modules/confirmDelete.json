@@ -1,0 +1,6 @@
+{
+  "confirmDelete": {
+    "title": "Delete record",
+    "message": "This action cannot be undone. Delete this record?"
+  }
+}

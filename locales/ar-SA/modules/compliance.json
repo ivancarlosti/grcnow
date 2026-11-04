@@ -1,0 +1,10 @@
+{
+  "compliance": {
+    "coverage": "التغطية",
+    "mapped": "المتطلبات المرتبطة",
+    "unmapped": "متطلبات غير مرتبطة",
+    "requirements": "المتطلبات",
+    "mapping": "ربط المتطلب",
+    "importPackage": "استيراد الحزمة"
+  }
+}

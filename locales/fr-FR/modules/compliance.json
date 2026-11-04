@@ -1,0 +1,10 @@
+{
+  "compliance": {
+    "coverage": "Couverture",
+    "mapped": "Exigences couvertes",
+    "unmapped": "Exigences non couvertes",
+    "requirements": "Exigences",
+    "mapping": "Associer une exigence",
+    "importPackage": "Importer un référentiel"
+  }
+}

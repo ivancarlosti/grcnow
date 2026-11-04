@@ -1,0 +1,1064 @@
+// GRC Platform schema — every business table carries tenant_id.
+// Tenant-scoped models use @@unique([tenantId, id]) so the tenant-aware Prisma
+// extension can safely scope findUnique/update/delete by (tenantId, id).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Tenancy & identity
+// ---------------------------------------------------------------------------
+
+model Tenant {
+  id            String    @id @default(cuid())
+  name          String
+  slug          String    @unique
+  domain        String? // e-mail domain used for Keycloak auto-provisioning
+  status        String    @default("active") // active | suspended
+  plan          String    @default("standard")
+  logoUrl       String?
+  primaryColor  String    @default("#0f766e")
+  defaultLocale String? // company default language (overrides global)
+  timezone      String    @default("UTC")
+  settings      Json?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+  users         User[]
+
+  @@map("tenants")
+}
+
+model User {
+  id                String    @id @default(cuid())
+  tenantId          String?   @map("tenant_id")
+  email             String    @unique
+  passwordHash      String?
+  name              String
+  jobTitle          String?
+  phone             String?
+  locale            String? // preferred language (highest priority)
+  status            String    @default("active") // active | disabled | invited
+  isSuperAdmin      Boolean   @default(false)
+  isCompanyAdmin    Boolean   @default(false)
+  unassigned        Boolean   @default(false) // Keycloak user awaiting tenant assignment
+  keycloakSub       String?   @unique
+  avatarUrl         String?
+  mustChangePassword Boolean  @default(false)
+  lastLoginAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+  tenant            Tenant?   @relation(fields: [tenantId], references: [id])
+  roles             UserRole[]
+  refreshTokens     RefreshToken[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("users")
+}
+
+model Role {
+  id          String     @id @default(cuid())
+  tenantId    String?    @map("tenant_id") // null = system template
+  key         String
+  name        String
+  description String?
+  permissions String[]   @default([])
+  isSystem    Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  users       UserRole[]
+
+  @@unique([tenantId, key])
+  @@index([tenantId])
+  @@map("roles")
+}
+
+model UserRole {
+  id       String @id @default(cuid())
+  tenantId String @map("tenant_id")
+  userId   String @map("user_id")
+  roleId   String @map("role_id")
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role     Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+  @@index([tenantId])
+  @@map("user_roles")
+}
+
+model RefreshToken {
+  id             String    @id @default(cuid())
+  userId         String    @map("user_id")
+  tokenHash      String    @unique
+  expiresAt      DateTime
+  createdAt      DateTime  @default(now())
+  revokedAt      DateTime?
+  ip             String?
+  userAgent      String?
+  impersonatedBy String?
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model ApiToken {
+  id         String    @id @default(cuid())
+  tenantId   String?   @map("tenant_id")
+  name       String
+  tokenHash  String    @unique
+  scopes     String[]  @default([])
+  createdBy  String?
+  lastUsedAt DateTime?
+  expiresAt  DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([tenantId])
+  @@map("api_tokens")
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  tenantId  String?  @map("tenant_id") // null = global (Super Admin)
+  key       String
+  value     String   @db.Text // JSON encoded
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, key])
+  @@map("settings")
+}
+
+model Translation {
+  id        String   @id @default(cuid())
+  locale    String
+  namespace String   @default("common")
+  key       String
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+
+  @@unique([locale, namespace, key])
+  @@index([locale])
+  @@map("translations")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  tenantId   String?  @map("tenant_id")
+  actorId    String?
+  actorEmail String?
+  action     String // create | update | delete | login | logout | export | import | ...
+  module     String?
+  entity     String?
+  entityId   String?
+  before     Json?
+  after      Json?
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+  @@index([entity, entityId])
+  @@map("audit_logs")
+}
+
+// ---------------------------------------------------------------------------
+// Platform: notifications, webhooks, files, comments, custom fields, rules
+// ---------------------------------------------------------------------------
+
+model Notification {
+  id        String    @id @default(cuid())
+  tenantId  String?   @map("tenant_id")
+  userId    String?   @map("user_id")
+  type      String
+  titleKey  String
+  params    Json?
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([tenantId, userId, createdAt])
+  @@map("notifications")
+}
+
+model NotificationTemplate {
+  id        String   @id @default(cuid())
+  tenantId  String?  @map("tenant_id") // null = global default template
+  event     String
+  locale    String
+  subject   String
+  body      String   @db.Text
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, event, locale])
+  @@map("notification_templates")
+}
+
+model Webhook {
+  id          String    @id @default(cuid())
+  tenantId    String    @map("tenant_id")
+  name        String
+  url         String
+  secret      String?
+  events      String[]  @default([])
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deliveries  WebhookDelivery[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("webhooks")
+}
+
+model WebhookDelivery {
+  id         String   @id @default(cuid())
+  tenantId   String   @map("tenant_id")
+  webhookId  String   @map("webhook_id")
+  event      String
+  payload    Json?
+  statusCode Int?
+  ok         Boolean  @default(false)
+  error      String?
+  createdAt  DateTime @default(now())
+  webhook    Webhook  @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, createdAt])
+  @@map("webhook_deliveries")
+}
+
+model File {
+  id         String   @id @default(cuid())
+  tenantId   String   @map("tenant_id")
+  storageKey String   @unique
+  filename   String
+  mime       String
+  size       Int
+  driver     String
+  category   String?
+  entity     String?
+  entityId   String?
+  uploadedBy String?
+  createdAt  DateTime @default(now())
+
+  @@unique([tenantId, id])
+  @@index([tenantId, entity, entityId])
+  @@map("files")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  tenantId  String   @map("tenant_id")
+  entity    String
+  entityId  String
+  body      String   @db.Text
+  authorId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, id])
+  @@index([tenantId, entity, entityId])
+  @@map("comments")
+}
+
+model Approval {
+  id          String    @id @default(cuid())
+  tenantId    String    @map("tenant_id")
+  entity      String
+  entityId    String
+  type        String // policy_approval | exception_approval | risk_treatment | ...
+  status      String    @default("pending") // pending | approved | rejected
+  requestedBy String?
+  approverId  String?
+  comment     String?
+  decidedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@unique([tenantId, id])
+  @@index([tenantId, entity, entityId])
+  @@map("approvals")
+}
+
+model CustomField {
+  id        String   @id @default(cuid())
+  tenantId  String   @map("tenant_id")
+  module    String
+  key       String
+  label     String
+  type      String   @default("text") // text | textarea | number | date | select | checkbox | user
+  options   Json?
+  required  Boolean  @default(false)
+  tab       String?
+  position  Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([tenantId, module, key])
+  @@index([tenantId, module])
+  @@map("custom_fields")
+}
+
+model CustomTab {
+  id       String @id @default(cuid())
+  tenantId String @map("tenant_id")
+  module   String
+  key      String
+  label    String
+  position Int    @default(0)
+
+  @@unique([tenantId, module, key])
+  @@map("custom_tabs")
+}
+
+model StatusRule {
+  id        String   @id @default(cuid())
+  tenantId  String   @map("tenant_id")
+  module    String
+  name      String
+  condition Json // { all: [{ field, op, value }] } | { any: [...] }
+  statusKey String
+  label     String
+  color     String   @default("slate")
+  icon      String?
+  priority  Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, id])
+  @@index([tenantId, module])
+  @@map("status_rules")
+}
+
+model SavedView {
+  id       String   @id @default(cuid())
+  tenantId String   @map("tenant_id")
+  userId   String
+  module   String
+  name     String
+  query    Json
+  isShared Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@unique([tenantId, id])
+  @@index([tenantId, userId, module])
+  @@map("saved_views")
+}
+
+model AutomationRule {
+  id         String    @id @default(cuid())
+  tenantId   String    @map("tenant_id")
+  name       String
+  event      String // e.g. risk.created, control.updated
+  condition  String    @db.Text // JS expression, e.g. "record.score > 15"
+  action     String    @db.Text // JS statement using helpers: notify(), webhook(), setField(), createTask()
+  active     Boolean   @default(true)
+  runCount   Int       @default(0)
+  lastRunAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@unique([tenantId, id])
+  @@index([tenantId, event])
+  @@map("automation_rules")
+}
+// ---------------------------------------------------------------------------
+// Organization
+// ---------------------------------------------------------------------------
+
+model BusinessUnit {
+  id          String   @id @default(cuid())
+  tenantId    String   @map("tenant_id")
+  name        String
+  code        String?
+  description String?  @db.Text
+  parentId    String?
+  managerId   String?
+  status      String   @default("active")
+  custom      Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  parent      BusinessUnit?  @relation("BusinessUnitTree", fields: [parentId], references: [id])
+  children    BusinessUnit[] @relation("BusinessUnitTree")
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("business_units")
+}
+
+model Asset {
+  id             String   @id @default(cuid())
+  tenantId       String   @map("tenant_id")
+  name           String
+  code           String?
+  type           String   @default("information")
+  classification String   @default("internal")
+  ownerId        String?
+  businessUnitId String?
+  vendorId       String?
+  description    String?  @db.Text
+  criticality    String   @default("medium")
+  status         String   @default("active")
+  custom         Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("assets")
+}
+
+model Vendor {
+  id           String   @id @default(cuid())
+  tenantId     String   @map("tenant_id")
+  name         String
+  code         String?
+  type         String   @default("supplier")
+  contactName  String?
+  contactEmail String?
+  website      String?
+  country      String?
+  riskLevel    String   @default("medium")
+  status       String   @default("active")
+  reviewDate   DateTime?
+  description  String?  @db.Text
+  custom       Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("vendors")
+}
+
+// ---------------------------------------------------------------------------
+// Internal controls
+// ---------------------------------------------------------------------------
+
+model Control {
+  id             String   @id @default(cuid())
+  tenantId       String   @map("tenant_id")
+  code           String
+  name           String
+  description    String?  @db.Text
+  objective      String?  @db.Text
+  type           String   @default("preventive") // preventive | detective | corrective
+  category       String   @default("operational")
+  ownerId        String?
+  businessUnitId String?
+  status         String   @default("draft") // draft | active | under_review | retired
+  frequency      String   @default("quarterly")
+  implementation String   @default("manual") // manual | automated | hybrid
+  lastTestedAt   DateTime?
+  nextTestAt     DateTime?
+  custom         Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  tests          ControlTest[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("controls")
+}
+
+model ControlTest {
+  id              String    @id @default(cuid())
+  tenantId        String    @map("tenant_id")
+  controlId       String    @map("control_id")
+  title           String
+  testedById      String?
+  testedAt        DateTime  @default(now())
+  result          String    @default("pending") // pass | fail | partial | pending
+  notes           String?   @db.Text
+  status          String    @default("completed")
+  evidenceFileIds String[]  @default([])
+  createdAt       DateTime  @default(now())
+  control         Control   @relation(fields: [controlId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, id])
+  @@index([tenantId, controlId])
+  @@map("control_tests")
+}
+
+// ---------------------------------------------------------------------------
+// Risk management
+// ---------------------------------------------------------------------------
+
+model Risk {
+  id                 String   @id @default(cuid())
+  tenantId           String   @map("tenant_id")
+  code               String
+  title              String
+  description        String?  @db.Text
+  category           String   @default("operational")
+  ownerId            String?
+  businessUnitId     String?
+  assetId            String?
+  likelihood         Int      @default(3)
+  impact             Int      @default(3)
+  score              Int      @default(9)
+  residualLikelihood Int      @default(3)
+  residualImpact     Int      @default(3)
+  residualScore      Int      @default(9)
+  treatment          String   @default("mitigate")
+  treatmentPlan      String?  @db.Text
+  status             String   @default("identified")
+  appetiteExceeded   Boolean  @default(false)
+  reviewDate         DateTime?
+  nextReviewDate     DateTime?
+  custom             Json?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  reviews            RiskReview[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("risks")
+}
+
+model RiskReview {
+  id            String   @id @default(cuid())
+  tenantId      String   @map("tenant_id")
+  riskId        String   @map("risk_id")
+  reviewerId    String?
+  reviewedAt    DateTime @default(now())
+  decision      String   @default("accepted")
+  notes         String?  @db.Text
+  scoreAtReview Int?
+  risk          Risk     @relation(fields: [riskId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, id])
+  @@index([tenantId, riskId])
+  @@map("risk_reviews")
+}
+
+model RiskMatrix {
+  id              String   @id @default(cuid())
+  tenantId        String   @map("tenant_id")
+  name            String
+  likelihoodScale Json
+  impactScale     Json
+  thresholds      Json
+  appetite        Int      @default(12)
+  isDefault       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("risk_matrices")
+}
+
+
+
+// ---------------------------------------------------------------------------
+// Compliance packages (global library templates) + mappings + findings
+// ---------------------------------------------------------------------------
+
+model CompliancePackage {
+  id             String   @id @default(cuid())
+  tenantId       String?  @map("tenant_id") // null = global library template
+  slug           String
+  name           String
+  authority      String // ISO | SOC2 | NIST | GDPR | DORA | PCI-DSS | CUSTOM
+  version        String   @default("1.0")
+  description    String?  @db.Text
+  isTemplate     Boolean  @default(true)
+  sourceUrl      String?
+  meta           Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  chapters       ComplianceChapter[]
+  requirements   ComplianceRequirement[]
+
+  @@unique([tenantId, slug, version])
+  @@index([tenantId])
+  @@map("compliance_packages")
+}
+
+model ComplianceChapter {
+  id          String   @id @default(cuid())
+  packageId   String   @map("package_id")
+  ref         String
+  title       String
+  description String?  @db.Text
+  position    Int      @default(0)
+  package     CompliancePackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  requirements ComplianceRequirement[]
+
+  @@index([packageId])
+  @@map("compliance_chapters")
+}
+
+model ComplianceRequirement {
+  id          String   @id @default(cuid())
+  packageId   String   @map("package_id")
+  chapterId   String?  @map("chapter_id")
+  ref         String
+  title       String
+  description String?  @db.Text
+  category    String?
+  position    Int      @default(0)
+  package     CompliancePackage  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  chapter     ComplianceChapter? @relation(fields: [chapterId], references: [id], onDelete: SetNull)
+  mappings    ComplianceMapping[]
+
+  @@unique([packageId, ref])
+  @@index([packageId])
+  @@map("compliance_requirements")
+}
+
+model ComplianceMapping {
+  id            String   @id @default(cuid())
+  tenantId      String   @map("tenant_id")
+  requirementId String   @map("requirement_id")
+  entityType    String   @map("entity_type") // control | policy | risk | project | exception
+  entityId      String   @map("entity_id")
+  status        String   @default("implemented") // implemented | partial | not_implemented | not_applicable
+  notes         String?  @db.Text
+  mappedBy      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  requirement   ComplianceRequirement @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, requirementId, entityType, entityId])
+  @@index([tenantId, requirementId])
+  @@map("compliance_mappings")
+}
+
+model AuditFinding {
+  id          String    @id @default(cuid())
+  tenantId    String    @map("tenant_id")
+  code        String
+  title       String
+  description String?   @db.Text
+  severity    String    @default("medium")
+  ownerId     String?
+  deadline    DateTime?
+  status      String    @default("open")
+  source      String    @default("internal_audit")
+  auditType   String    @default("internal")
+  controlId   String?
+  closedAt    DateTime?
+  custom      Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("audit_findings")
+}
+
+// ---------------------------------------------------------------------------
+// Policies
+// ---------------------------------------------------------------------------
+
+model Policy {
+  id             String    @id @default(cuid())
+  tenantId       String    @map("tenant_id")
+  code           String
+  title          String
+  category       String    @default("governance")
+  ownerId        String?
+  status         String    @default("draft")
+  version        String    @default("1.0")
+  content        String?   @db.Text
+  summary        String?   @db.Text
+  effectiveDate  DateTime?
+  nextReviewDate DateTime?
+  approvedBy     String?
+  approvedAt     DateTime?
+  publishedAt    DateTime?
+  requiresAck    Boolean   @default(true)
+  custom         Json?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  versions       PolicyVersion[]
+  acks           PolicyAck[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("policies")
+}
+
+model PolicyVersion {
+  id            String   @id @default(cuid())
+  tenantId      String   @map("tenant_id")
+  policyId      String   @map("policy_id")
+  version       String
+  content       String?  @db.Text
+  changeSummary String?
+  createdBy     String?
+  createdAt     DateTime @default(now())
+  policy        Policy   @relation(fields: [policyId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, id])
+  @@index([tenantId, policyId])
+  @@map("policy_versions")
+}
+
+model PolicyAck {
+  id             String   @id @default(cuid())
+  tenantId       String   @map("tenant_id")
+  policyId       String   @map("policy_id")
+  userId         String   @map("user_id")
+  acknowledgedAt DateTime @default(now())
+  policy         Policy   @relation(fields: [policyId], references: [id], onDelete: Cascade)
+
+  @@unique([policyId, userId])
+  @@index([tenantId])
+  @@map("policy_acks")
+}
+
+// ---------------------------------------------------------------------------
+// Exceptions
+// ---------------------------------------------------------------------------
+
+model ExceptionRecord {
+  id            String    @id @default(cuid())
+  tenantId      String    @map("tenant_id")
+  code          String
+  title         String
+  description   String?   @db.Text
+  ownerId       String?
+  status        String    @default("pending")
+  expiresAt     DateTime?
+  approvedBy    String?
+  approvedAt    DateTime?
+  justification String?   @db.Text
+  riskId        String?
+  controlId     String?
+  policyId      String?
+  custom        Json?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("exceptions")
+}
+
+// ---------------------------------------------------------------------------
+// Projects & tasks
+// ---------------------------------------------------------------------------
+
+model Project {
+  id             String   @id @default(cuid())
+  tenantId       String   @map("tenant_id")
+  name           String
+  description    String?  @db.Text
+  status         String   @default("planning")
+  ownerId        String?
+  startDate      DateTime?
+  endDate        DateTime?
+  progress       Int      @default(0)
+  riskIds        String[] @default([])
+  controlIds     String[] @default([])
+  requirementIds String[] @default([])
+  custom         Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  tasks          Task[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("projects")
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  tenantId    String    @map("tenant_id")
+  projectId   String    @map("project_id")
+  title       String
+  description String?   @db.Text
+  assigneeId  String?
+  dueDate     DateTime?
+  status      String    @default("todo")
+  priority    String    @default("medium")
+  position    Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, id])
+  @@index([tenantId, projectId])
+  @@map("tasks")
+}
+
+// ---------------------------------------------------------------------------
+// Incidents
+// ---------------------------------------------------------------------------
+
+model Incident {
+  id             String    @id @default(cuid())
+  tenantId       String    @map("tenant_id")
+  code           String
+  title          String
+  description    String?   @db.Text
+  category       String    @default("security")
+  severity       String    @default("medium")
+  status         String    @default("detected")
+  detectedAt     DateTime  @default(now())
+  reportedBy     String?
+  ownerId        String?
+  containedAt    DateTime?
+  closedAt       DateTime?
+  lessonsLearned String?   @db.Text
+  riskId         String?
+  custom         Json?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("incidents")
+}
+
+// ---------------------------------------------------------------------------
+// Business continuity
+// ---------------------------------------------------------------------------
+
+model BusinessContinuityPlan {
+  id             String    @id @default(cuid())
+  tenantId       String    @map("tenant_id")
+  name           String
+  description    String?   @db.Text
+  businessUnitId String?
+  ownerId        String?
+  status         String    @default("draft")
+  rtoHours       Int       @default(24)
+  rpoHours       Int       @default(24)
+  lastTestedAt   DateTime?
+  nextTestAt     DateTime?
+  custom         Json?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  tests          BcpTest[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("business_continuity_plans")
+}
+
+model BcpTest {
+  id       String   @id @default(cuid())
+  tenantId String   @map("tenant_id")
+  bcpId    String   @map("bcp_id")
+  testedAt DateTime @default(now())
+  result   String   @default("pending")
+  notes    String?  @db.Text
+  testedBy String?
+  bcp      BusinessContinuityPlan @relation(fields: [bcpId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, id])
+  @@index([tenantId, bcpId])
+  @@map("bcp_tests")
+}
+
+// ---------------------------------------------------------------------------
+// Online assessments / questionnaires
+// ---------------------------------------------------------------------------
+
+model AssessmentTemplate {
+  id          String   @id @default(cuid())
+  tenantId    String   @map("tenant_id")
+  name        String
+  description String?  @db.Text
+  questions   Json     @default("[]")
+  scoring     Json?
+  entityType  String   @default("user") // user | vendor
+  status      String   @default("active")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  assessments Assessment[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("assessment_templates")
+}
+
+model Assessment {
+  id          String    @id @default(cuid())
+  tenantId    String    @map("tenant_id")
+  templateId  String    @map("template_id")
+  name        String
+  targetType  String    @default("user")
+  targetId    String?
+  targetEmail String?
+  status      String    @default("draft") // draft | sent | completed | expired
+  score       Int?
+  answers     Json?
+  publicToken String    @unique
+  sentAt      DateTime?
+  completedAt DateTime?
+  dueDate     DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  template    AssessmentTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("assessments")
+}
+
+// ---------------------------------------------------------------------------
+// Awareness training
+// ---------------------------------------------------------------------------
+
+model TrainingCourse {
+  id             String   @id @default(cuid())
+  tenantId       String   @map("tenant_id")
+  title          String
+  description    String?  @db.Text
+  materialFileId String?
+  status         String   @default("active")
+  category       String   @default("security")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  assignments    TrainingAssignment[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("training_courses")
+}
+
+model TrainingAssignment {
+  id          String    @id @default(cuid())
+  tenantId    String    @map("tenant_id")
+  courseId    String    @map("course_id")
+  userId      String    @map("user_id")
+  status      String    @default("assigned") // assigned | in_progress | completed
+  assignedAt  DateTime  @default(now())
+  completedAt DateTime?
+  score       Int?
+  course      TrainingCourse @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, id])
+  @@index([tenantId, courseId])
+  @@map("training_assignments")
+}
+
+// ---------------------------------------------------------------------------
+// Account reviews
+// ---------------------------------------------------------------------------
+
+model AccountReview {
+  id          String   @id @default(cuid())
+  tenantId    String   @map("tenant_id")
+  name        String
+  reviewerId  String?
+  status      String   @default("draft") // draft | in_review | completed
+  dueDate     DateTime?
+  system      String?
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  items       AccountReviewItem[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("account_reviews")
+}
+
+model AccountReviewItem {
+  id          String    @id @default(cuid())
+  tenantId    String    @map("tenant_id")
+  reviewId    String    @map("review_id")
+  accountName String
+  system      String?
+  ownerName   String?
+  accountType String    @default("user")
+  status      String    @default("pending") // pending | approved | revoked
+  decision    String?
+  reviewedAt  DateTime?
+  review      AccountReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, id])
+  @@index([tenantId, reviewId])
+  @@map("account_review_items")
+}
+
+// ---------------------------------------------------------------------------
+// Whistleblowing (anonymous, per company)
+// ---------------------------------------------------------------------------
+
+model WhistleblowingReport {
+  id           String    @id @default(cuid())
+  tenantId     String    @map("tenant_id")
+  token        String    @unique
+  category     String    @default("other")
+  subject      String
+  message      String    @db.Text
+  status       String    @default("new") // new | triage | investigating | closed
+  severity     String?
+  contactEmail String?
+  ip           String?
+  notes        String?   @db.Text
+  createdAt    DateTime  @default(now())
+  resolvedAt   DateTime?
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("whistleblowing_reports")
+}
+
+// ---------------------------------------------------------------------------
+// Data privacy: data flows + RoPA
+// ---------------------------------------------------------------------------
+
+model DataFlow {
+  id                String   @id @default(cuid())
+  tenantId          String   @map("tenant_id")
+  name              String
+  description       String?  @db.Text
+  sourceType        String   @default("internal") // internal | vendor | customer | employee
+  sourceId          String?
+  destinationType   String   @default("internal")
+  destinationId     String?
+  dataCategories    String[] @default([])
+  personalData      Boolean  @default(true)
+  transferMechanism String?
+  country           String?
+  frequency         String   @default("continuous")
+  custom            Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("data_flows")
+}
+
+model ProcessingActivity {
+  id             String   @id @default(cuid())
+  tenantId       String   @map("tenant_id")
+  name           String
+  purpose        String?  @db.Text
+  legalBasis     String   @default("legitimate_interest")
+  controller     String?
+  dpo            String?
+  dataSubjects   String[] @default([])
+  dataCategories String[] @default([])
+  recipients     String?  @db.Text
+  retention      String?
+  crossBorder    Boolean  @default(false)
+  safeguards     String?  @db.Text
+  riskLevel      String   @default("medium")
+  status         String   @default("active")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("processing_activities")
+}
+

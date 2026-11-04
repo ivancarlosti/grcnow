@@ -1,0 +1,9 @@
+{
+  "notification": {
+    "riskCreated": "New risk registered: {title}",
+    "incidentCreated": "New incident reported: {title}",
+    "findingCreated": "New audit finding: {title}",
+    "controlTestFailed": "Control test failed: {title}",
+    "policyPublished": "Policy published: {title}"
+  }
+}

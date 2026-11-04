@@ -1,0 +1,6 @@
+{
+  "confirmDelete": {
+    "title": "Eliminar registro",
+    "message": "Esta acción no se puede deshacer. ¿Eliminar este registro?"
+  }
+}

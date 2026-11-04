@@ -1,0 +1,9 @@
+{
+  "notification": {
+    "riskCreated": "नया जोखिम दर्ज: {title}",
+    "incidentCreated": "नई घटना दर्ज: {title}",
+    "findingCreated": "नया ऑडिट निष्कर्ष: {title}",
+    "controlTestFailed": "नियंत्रण परीक्षण विफल: {title}",
+    "policyPublished": "नीति प्रकाशित: {title}"
+  }
+}

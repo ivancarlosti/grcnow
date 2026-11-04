@@ -1,0 +1,16 @@
+{
+  "detail": {
+    "tabs": {
+      "overview": "概览",
+      "history": "历史",
+      "comments": "评论",
+      "attachments": "附件"
+    },
+    "addComment": "添加评论",
+    "commentPlaceholder": "写下评论…",
+    "noComments": "暂无评论",
+    "noHistory": "暂无变更",
+    "created": "由 {user} 于 {date} 创建",
+    "updated": "最后由 {user} 于 {date} 更新"
+  }
+}

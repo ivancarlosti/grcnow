@@ -1,0 +1,16 @@
+{
+  "detail": {
+    "tabs": {
+      "overview": "Aperçu",
+      "history": "Historique",
+      "comments": "Commentaires",
+      "attachments": "Pièces jointes"
+    },
+    "addComment": "Ajouter un commentaire",
+    "commentPlaceholder": "Écrivez un commentaire…",
+    "noComments": "Aucun commentaire",
+    "noHistory": "Aucune modification",
+    "created": "Créé par {user} le {date}",
+    "updated": "Dernière modification par {user} le {date}"
+  }
+}

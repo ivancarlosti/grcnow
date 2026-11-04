@@ -1,0 +1,6 @@
+{
+  "confirmDelete": {
+    "title": "删除记录",
+    "message": "此操作无法撤销。确定删除该记录吗？"
+  }
+}

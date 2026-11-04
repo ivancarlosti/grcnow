@@ -1,0 +1,12 @@
+{
+  "wb": {
+    "title": "Canal de ética y denuncias",
+    "subtitle": "Reporte una inquietud de forma confidencial. Puede permanecer anónimo.",
+    "category": "Categoría",
+    "subject": "Asunto",
+    "message": "¿Qué ocurrió?",
+    "submit": "Enviar denuncia",
+    "thanks": "Gracias. Su denuncia fue recibida.",
+    "anonymous": "Enviar anónimamente"
+  }
+}
