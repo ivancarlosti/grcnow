@@ -15,15 +15,34 @@ const root = path.resolve(__dirname, '..');
 const localesDir = path.join(root, 'locales');
 const COMMON_GROUPS = new Set(['app', 'common', 'auth', 'errors', 'nav', 'actions', 'status', 'fields', 'roles', 'modules']);
 
+/** Writes an own property, refusing the keys that enable prototype pollution. */
+function safeSet(target, key, value) {
+  if (key === '__proto__' || key === 'prototype' || key === 'constructor') return;
+  Object.defineProperty(target, key, { value, enumerable: true, writable: true, configurable: true });
+}
+
+function isUnsafeKey(key) {
+  return key === '__proto__' || key === 'prototype' || key === 'constructor';
+}
+
 function setDeep(target, dotted, value) {
   const parts = dotted.split('.');
+  if (parts.some(isUnsafeKey)) {
+    throw new Error(`Unsafe translation key: ${dotted}`);
+  }
   let node = target;
   for (let i = 0; i < parts.length - 1; i += 1) {
     const part = parts[i];
-    if (typeof node[part] !== 'object' || node[part] === null) node[part] = {};
-    node = node[part];
+    const current = node[part];
+    if (typeof current !== 'object' || current === null) {
+      const created = {};
+      safeSet(node, part, created);
+      node = created;
+    } else {
+      node = current;
+    }
   }
-  node[parts[parts.length - 1]] = value;
+  safeSet(node, parts[parts.length - 1], value);
 }
 
 function writeJson(file, data) {
@@ -66,7 +85,10 @@ const enFiles = buckets.get('en-US');
 const merged = {};
 for (const data of enFiles.values()) {
   for (const [k, v] of Object.entries(data)) {
-    merged[k] = typeof merged[k] === 'object' && merged[k] !== null ? { ...merged[k], ...v } : v;
+    if (isUnsafeKey(k)) continue;
+    const current = merged[k];
+    const next = typeof current === 'object' && current !== null ? { ...current, ...v } : v;
+    safeSet(merged, k, next);
   }
 }
 writeJson(path.join(root, 'apps/web/src/i18n/fallback-messages.json'), merged);

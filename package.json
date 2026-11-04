@@ -23,5 +23,12 @@
   },
   "devDependencies": {
     "playwright": "1.64.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "deepmerge-ts": "^8.0.0",
+      "multer": "^2.5.0",
+      "postcss": "^8.5.32"
+    }
   }
 }

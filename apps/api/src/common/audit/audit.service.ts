@@ -1,3 +1,4 @@
+import { safeSetProperty } from '../utils/objects';
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { tenantContext } from '../tenant/tenant-context';
@@ -51,7 +52,7 @@ export class AuditService {
     const clone: any = Array.isArray(value) ? [] : {};
     for (const [key, val] of Object.entries(value)) {
       if (/password|secret|token/i.test(key)) continue;
-      clone[key] = val;
+      safeSetProperty(clone, key, val);
     }
     return JSON.parse(JSON.stringify(clone, (k, v) => (v instanceof Date ? v.toISOString() : v)));
   }

@@ -6,10 +6,24 @@ import { isRtl, LOCALES, normalizeLocale } from '../../config';
 import { SettingsService } from '../settings/settings.service';
 import { parseInput } from '../../common/http/helpers';
 
+const UNSAFE_KEY_SEGMENTS = new Set(['__proto__', 'prototype', 'constructor']);
+
+const translationKey = z
+  .string()
+  .min(3)
+  .max(200)
+  .regex(/^[A-Za-z0-9_-]+(\.[A-Za-z0-9_-]+)+$/)
+  .refine((key) => !key.split('.').some((segment) => UNSAFE_KEY_SEGMENTS.has(segment)));
+
 const translationSchema = z.object({
   locale: z.string(),
-  key: z.string().min(3),
+  key: translationKey,
   value: z.string().max(5000).default(''),
+});
+
+const translationResetSchema = z.object({
+  locale: z.string(),
+  key: translationKey,
 });
 
 
@@ -87,8 +101,9 @@ export class I18nController {
   @SuperAdminOnly()
   @RequirePermissions('settings:write')
   @Delete('translations')
-  async reset(@Body() body: { locale: string; key: string }) {
-    await this.i18n.deleteOverride(body.locale, body.key);
+  async reset(@Body() body: unknown) {
+    const dto = parseInput(translationResetSchema, body);
+    await this.i18n.deleteOverride(dto.locale, dto.key);
     return { ok: true };
   }
 

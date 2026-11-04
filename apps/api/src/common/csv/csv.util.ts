@@ -1,4 +1,5 @@
 import { parse } from 'csv-parse/sync';
+import { safeSetProperty } from '../utils/objects';
 
 export interface CsvColumn {
   key: string;
@@ -43,7 +44,7 @@ export function mapCsvRow(row: Record<string, string>, columns: CsvColumn[]): Re
   const result: Record<string, string> = {};
   for (const [rawKey, value] of Object.entries(row)) {
     const key = byLabel.get(String(rawKey).trim().toLowerCase());
-    if (key) result[key] = value;
+    if (key) safeSetProperty(result, key, value);
   }
   return result;
 }
