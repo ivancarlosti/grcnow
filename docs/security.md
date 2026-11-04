@@ -51,3 +51,26 @@ Live probes against a running API: `PUT /api/i18n/translations` with `__proto__.
   8.4.31 copy bundled with Next 15.
 - Keycloak and SMTP were not exercised against live servers in this review; both paths are covered by
   configuration validation only.
+
+## Final status after remediation
+
+| Check | Before | After |
+| --- | --- | --- |
+| Dependabot alerts (open) | 30 (8 high, 20 medium, 1 low, …) | **0** |
+| Code scanning alerts (open) | 2 warnings | **0** (2 marked fixed) |
+| Secret scanning alerts (open) | 0 | **0** |
+| Dependabot PRs (open) | 1 (#4) | **0** (merged after local validation) |
+
+Re-verify at any time with:
+
+```bash
+gh api 'repos/{owner}/{repo}/dependabot/alerts?state=open' --jq 'length'
+gh api 'repos/{owner}/{repo}/code-scanning/alerts?state=open' --jq 'length'
+gh pr list --state open --author "app/dependabot"
+```
+
+### Unrelated CI fix shipped in the same pass
+
+`.releaserc` bumped the non-existent root `manifest.json`, so every `🚀 Semantic Release` run failed with
+`sed: can't read manifest.json`. The release now bumps the root `package.json` version and commits it.
+
