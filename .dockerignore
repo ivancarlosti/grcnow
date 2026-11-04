@@ -19,3 +19,6 @@ storage
 !docker/.env.example
 README.md
 pnpm-lock.yaml
+
+**/.env
+**/.env.*
