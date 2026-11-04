@@ -17,10 +17,10 @@
       "preset": "angular"
     }],
     ["@semantic-release/exec", {
-      "prepareCmd": "sed -i \"s/\\\"version\\\": \\\".*\\\"/\\\"version\\\": \\\"${nextRelease.version}\\\"/\" manifest.json"
+      "prepareCmd": "sed -i \"s/\\\"version\\\": \\\".*\\\"/\\\"version\\\": \\\"${nextRelease.version}\\\"/\" package.json"
     }],
     ["@semantic-release/git", {
-      "assets": ["manifest.json"],
+      "assets": ["package.json"],
       "message": "chore(release): bump version to ${nextRelease.version} [skip ci]"
     }],
     "@semantic-release/github"
