@@ -1,7 +1,7 @@
 {
   "name": "grcnow",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Multi-tenant GRC platform (Eramba-equivalent) — NestJS + Next.js + PostgreSQL",
   "packageManager": "pnpm@10.34.9",
   "engines": {
